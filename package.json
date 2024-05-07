@@ -11,5 +11,8 @@
     "url": "git+https://github.com/JP-sDEV/fragments.git"
   },
   "author": "Jon Pablo",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.2.5"
+  }
 }
