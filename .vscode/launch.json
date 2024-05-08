@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        // Start the app and attach the debugger
+        {
+            "name": "Debug via npm run debug",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run-script", "debug"],
+            "skipFiles": ["<node_internals>/**"],
+            "type": "node"
+        }
+    ]
+}
