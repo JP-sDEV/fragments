@@ -57,3 +57,15 @@ The server will start on `port: 8080` by default.
           version,
       }
     ```
+
+### `GET /v1/fragments`
+
+-   **Description**: Protected route, only accessible if user is authorized
+-   **Access**: Protected
+-   **Response**:
+    ```
+      {
+          status: 'ok',
+          fragments: []
+      }
+    ```
