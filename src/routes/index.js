@@ -3,6 +3,7 @@ const express = require('express');
 // Author and version from package.json
 const { version, author } = require('../../package.json');
 const { authenticate } = require('../auth');
+const { createSuccessResponse } = require('../response.js');
 
 // Create a router that we can use to mount our API
 const router = express.Router();
@@ -22,14 +23,14 @@ router.use(`/v1`, authenticate(), require('./api'));
 router.get('/', (req, res) => {
     // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#controlling_caching
     // Can store cache - has to be revalidated at each request
-    res.setHeader('Cache-Control', 'no-cache');
-
-    res.status(200).json({
-        status: 'ok',
+    const data = {
         author,
         githubUrl: 'https://github.com/JP-sDEV/fragments',
         version,
-    });
+    };
+
+    res.setHeader('Cache-Control', 'no-cache');
+    res.status(200).json(createSuccessResponse(data));
 });
 
 module.exports = router;

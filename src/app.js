@@ -6,6 +6,7 @@ const passport = require('passport');
 const authenticate = require('./auth');
 
 const logger = require('./logger');
+const { createErrorResponse } = require('./response');
 const pino = require('pino-http')({
     logger,
 });
@@ -28,14 +29,9 @@ app.use('/', require('./routes'));
  * @param {object} req - Express request object
  * @param {object} res - Express response object
  */
+
 app.use((req, res) => {
-    res.status(404).json({
-        status: 'error',
-        error: {
-            message: 'not found',
-            code: 404,
-        },
-    });
+    res.status(404).json(createErrorResponse(res.code, res.message));
 });
 
 /**
