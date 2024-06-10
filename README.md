@@ -1,4 +1,4 @@
-# Fragments : v0.0.1
+# Fragments : v0.0.2
 
 ## Description:
 
@@ -58,14 +58,71 @@ The server will start on `port: 8080` by default.
       }
     ```
 
-### `GET /v1/fragments`
+### `GET /v1/fragments/?expand=1`
 
--   **Description**: Protected route, only accessible if user is authorized
+-   **Description**: Protected route, only accessible if user is authenicated. Returns a list of Fragment ids that belong to current user.
+-   **Access**: Protected
+-   -   **Params**:
+    -   expand: Optional, 1 to retrieve the Fragment metadata
+-   **Response**:
+    ```{
+     "status": "ok",
+     "fragments": [
+         {
+         "id": "4dcc65b6-9d57-453a-bd3a-63c107a51698",
+         "created": "2021-11-08T01:08:20.269Z",
+         "updated": "2021-11-08T01:08:20.271Z",
+         "ownerId": "11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a",
+         "type": "text/plain",
+         "size": 18
+         },
+         {
+         "id": "30a84843-0cd4-4975-95ba-b96112aea189",
+         "created": "2021-11-08T01:04:46.071Z",
+         "updated": "2021-11-08T01:04:46.073Z",
+         "ownerId": "11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a",
+         "type": "text/plain",
+         "size": 300
+         }
+     ]
+     }
+    ```
+
+### `GET /v1/fragments/:id.<.ext>`
+
+-   **Description**: Protected route, only accessible if user is authenicated. Returns the Fragment data given its id.
+-   **Params**:
+    -   id: Required, Fragment id
+    -   .ext: Optional, convert Fragment data to a supported extension
 -   **Access**: Protected
 -   **Response**:
+
     ```
-      {
-          status: 'ok',
-          fragments: []
-      }
+    curl -i -u user1@email.com:password1 https://fragments-api.com/v1/fragments/4dcc65b6-9d57-453a-bd3a-63c107a51698
+
+    HTTP/1.1 200 OK
+    Content-Type: text/plain
+    Content-Length: 18
+
+    This is a fragment
+    ```
+
+### `POST /v1/fragments`
+
+-   **Description**: Protected route, only accessible if user is authenicated. Returns the Fragment metadata.
+-   **Access**: Protected
+-   **Response**:
+
+    ```
+    {
+        "status": "ok",
+        "fragment": {
+            "id": "fdf71254-d217-4675-892c-a185a4f1c9b4",
+            "ownerId": "11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a",
+            "created": "2021-11-02T15:09:50.403Z",
+            "updated": "2021-11-02T15:09:50.403Z",
+            "type": "text/plain",
+            "size": 1024
+            }
+    }
     ```
