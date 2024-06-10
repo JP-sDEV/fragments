@@ -1,3 +1,6 @@
+// src/server.js
+
+require('dotenv').config();
 const stoppable = require('stoppable');
 
 // Get logger instance
@@ -12,15 +15,6 @@ const port = parseInt(process.env.PORT || '8080', 10);
 // Start a server listening on this port
 const server = stoppable(
     app.listen(port, () => {
-        // Check if LOG_LEVEL is set to debug
-        if (process.env.LOG_LEVEL === 'debug') {
-            // Print all environment variables
-            console.log('Environment Variables:');
-            for (const [key, value] of Object.entries(process.env)) {
-                console.log(`${key}: ${value}`);
-            }
-        }
-
         // Log a message that the server has started, and which port it's using.
         logger.info(`Server started on port ${port}`);
     })
