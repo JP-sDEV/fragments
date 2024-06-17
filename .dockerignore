@@ -10,3 +10,6 @@ tests/
 .gitignore
 .prettier*
 jest*
+*.tgz
+*.md
+eslint.config.mjs
