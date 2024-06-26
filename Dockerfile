@@ -37,11 +37,11 @@ COPY ./src ./src
 
 ## Stage 2: Serve microservice
 # Spin up Image
-CMD npm start
+CMD ["npm", "start"]
 
 # Run service on port 8080
 EXPOSE 8080
 
 # Healthcheck
 HEALTHCHECK --interval=15s --timeout=90s --start-period=15s --retries=3 \
-    CMD curl --fail localhost:8080 || (echo "Health check failed." >&2 && exit 1)
+    CMD ["sh", "-c", "curl --fail localhost:8080 || (echo 'Health check failed.' >&2 && exit 1)"]
