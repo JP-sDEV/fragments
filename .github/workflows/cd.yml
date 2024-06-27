@@ -18,6 +18,8 @@ on:
     tags:
       # Any tag starting with v... should trigger this workflow.
       - 'v**'
+      
+  workflow_dispatch:
 
 jobs:
   # NOTE: this assumes our CI jobs have already passed previously
@@ -69,3 +71,8 @@ jobs:
             # Use the git tag version and `latest`
             tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}, ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest 
             
+        - name: Print Environment Variables
+          run: |
+            echo "ECR_REGISTRY: ${{ env.ECR_REGISTRY }}"
+            echo "ECR_REPO: ${{ env.ECR_REPO }}"
+            echo "VERSION_TAG: ${{ env.VERSION_TAG }}"
