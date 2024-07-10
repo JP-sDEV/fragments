@@ -172,11 +172,9 @@ class Fragment {
      * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
      */
     static isSupportedType(value) {
-        let regex = /text\/.*/i;
-        if (!regex.test(value)) {
-            return false;
-        }
-        return true;
+        let textRegex = /^text\/.*/i; // support for text/* types
+        let jsonRegex = /^application\/json$/i; // support for ONLY application/json
+        return textRegex.test(value) || jsonRegex.test(value);
     }
 }
 

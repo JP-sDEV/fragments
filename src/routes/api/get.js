@@ -7,6 +7,7 @@ const logger = require('../../logger');
 
 const supportedTypes = {
     '.txt': 'text/plain',
+    '.json': 'application/json',
 };
 
 async function getFragments(req, res) {
@@ -20,6 +21,7 @@ async function getFragments(req, res) {
     }
 }
 
+// by id
 async function getFragmentById(req, res) {
     logger.info({ req }, '/GET');
     try {
@@ -61,6 +63,16 @@ async function convert(type, buffer) {
     switch (type) {
         case '.txt':
             return buffer.toString('utf-8');
+
+        case '.json':
+            try {
+                const jsonString = new TextDecoder().decode(buffer);
+                const jsonObject = JSON.parse(jsonString);
+                return jsonObject;
+            } catch (error) {
+                console.error('Failed to parse JSON:', error);
+                throw error;
+            }
         default:
             return null;
     }
