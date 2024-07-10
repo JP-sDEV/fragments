@@ -4,6 +4,9 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
+const markdownit = require('markdown-it');
+const md = markdownit();
+
 describe('GET /v1/fragments', () => {
     describe('Request requires authentication', () => {
         test('unauthenticated requests are denied', () =>
@@ -339,6 +342,33 @@ describe('GET /v1/fragments', () => {
 
                 expect(res.status).toBe(200);
                 expect(res.body).not.toHaveProperty('status'); // should not return success response object, just the fragment data
+            });
+        });
+
+        describe('Fragment Conversions', () => {
+            test('text/markdown to text/html', async () => {
+                const markdownFragment = '# markdown-it rulezz!';
+                const htmlContent = md.render(markdownFragment);
+
+                // insert fragment
+                const post = await request(app)
+                    .post('/v1/fragments')
+                    .auth('user1@email.com', 'password1')
+                    .set('Content-Type', 'text/markdown')
+                    .send(markdownFragment);
+
+                const postJSON = JSON.parse(post.text);
+
+                const fragmentId = postJSON.fragment.id;
+
+                const res = await request(app)
+                    .get(`/v1/fragments/${fragmentId}.html`)
+                    .auth('user1@email.com', 'password1');
+
+                expect(res.statusCode).toBe(200);
+                expect(res.text).toEqual(htmlContent);
+                expect(res.headers['content-type']).toEqual('text/html; charset=utf-8');
+                console.log('Res: ', res.text);
             });
         });
     });

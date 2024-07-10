@@ -4,10 +4,13 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 const { Fragment } = require('../../model/fragment');
 const path = require('path');
 const logger = require('../../logger');
+const markdownit = require('markdown-it');
+const md = markdownit();
 
 const supportedTypes = {
     '.txt': 'text/plain',
     '.json': 'application/json',
+    '.html': 'text/html',
 };
 
 async function getFragments(req, res) {
@@ -69,6 +72,19 @@ async function convert(type, buffer) {
                 const jsonString = new TextDecoder().decode(buffer);
                 const jsonObject = JSON.parse(jsonString);
                 return jsonObject;
+            } catch (error) {
+                console.error('Failed to parse JSON:', error);
+                throw error;
+            }
+
+        case '.html':
+            try {
+                // Convert markdown fragment binary into string
+                const markdownString = new TextDecoder().decode(buffer);
+                // Convert string into .html
+                const htmlContent = md.render(markdownString);
+
+                return htmlContent;
             } catch (error) {
                 console.error('Failed to parse JSON:', error);
                 throw error;
