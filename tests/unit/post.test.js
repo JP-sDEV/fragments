@@ -51,6 +51,22 @@ describe('POST /v1/fragments', () => {
             expect(res.status).toBe(201);
         });
 
+        test('authenticated users can create an application/json Fragment', async () => {
+            const testJsonFragment = {
+                name: 'Bob Smith',
+                isAwesome: true,
+            };
+
+            const res = await request(app)
+                .post('/v1/fragments')
+                .auth('user1@email.com', 'password1')
+                .set('Content-Type', 'application/json')
+                .send(testJsonFragment);
+
+            // Check the status code
+            expect(res.status).toBe(201);
+        });
+
         test('unsupported type is rejected', async () => {
             const res = await request(app)
                 .post('/v1/fragments')
