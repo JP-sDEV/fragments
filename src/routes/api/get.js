@@ -67,16 +67,6 @@ async function convert(type, buffer) {
         case '.txt':
             return buffer.toString('utf-8');
 
-        case '.json':
-            try {
-                const jsonString = new TextDecoder().decode(buffer);
-                const jsonObject = JSON.parse(jsonString);
-                return jsonObject;
-            } catch (error) {
-                console.error('Failed to parse JSON:', error);
-                throw error;
-            }
-
         case '.html':
             try {
                 // Convert markdown fragment binary into string
@@ -86,7 +76,7 @@ async function convert(type, buffer) {
 
                 return htmlContent;
             } catch (error) {
-                console.error('Failed to parse JSON:', error);
+                console.error('Failed to parse into HTMl:', error);
                 throw error;
             }
         default:
