@@ -16,7 +16,18 @@ services:
             - HTPASSWD_FILE=tests/.htpasswd
             # Use the LOG_LEVEL set in the host environment, or default to info
             - LOG_LEVEL=${LOG_LEVEL:-info}
-        # Ports to publish, local port:container port
+            - AWS_REGION=us-east-1
+            # Use the LocalStack endpoint vs. AWS for S3 AWS SDK clients.
+            # NOTE: we use Docker's internal network to the localstack container
+            - AWS_S3_ENDPOINT_URL=http://localstack:4566
+            # Use the DynamoDB local endpoint vs. AWS for DynamoDB AWS SDK clients.
+            - AWS_DYNAMODB_ENDPOINT_URL=http://dynamodb-local:8000
+            # This S3 bucket and DynamoDB table need to get created first, see
+            # local-aws-setup.sh. We'll default to 'fragments' as the name, unless
+            # something else is defined in the env.
+            - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME:-fragments}
+            - AWS_DYNAMODB_TABLE_NAME=${AWS_DYNAMODB_TABLE_NAME:-fragments}
+        # Ports to publish
         ports:
             - '8080:8080'
     dynamodb-local:
