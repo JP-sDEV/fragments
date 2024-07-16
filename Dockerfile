@@ -32,6 +32,7 @@ COPY --from=dependencies /app /app
 
 # Copy source code 
 COPY ./src ./src
+COPY ./tests/.htpasswd ./tests/.htpasswd
 
 ################################################################################################################
 

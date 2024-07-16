@@ -2,8 +2,6 @@
 .vscode/
 coverage/
 node_modules/
-tests/
-!tests/.htpasswd
 .env
 .eslintrc.js
 .git/
@@ -13,3 +11,7 @@ jest*
 *.tgz
 *.md
 eslint.config.mjs
+
+# Exclude all files in tests directory EXCEPT tests/.htpasswd
+tests/*
+!tests/.htpasswd

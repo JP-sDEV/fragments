@@ -1,0 +1,42 @@
+# docker-compose.yml
+
+services:
+    # Fragments microservice API server
+    fragments:
+        # Use a proper init process (tini)
+        init: true
+        # Build the Docker Image using the Dockerfile
+        # and current directory as the build context
+        build: .
+        # Environment variables to use
+        environment:
+            # Our API will be running on http://localhost:8080
+            - API_URL=http://localhost:8080
+            # Use Basic Auth (for running tests, CI)
+            - HTPASSWD_FILE=tests/.htpasswd
+            # Use the LOG_LEVEL set in the host environment, or default to info
+            - LOG_LEVEL=${LOG_LEVEL:-info}
+        # Ports to publish, local port:container port
+        ports:
+            - '8080:8080'
+    dynamodb-local:
+        image: amazon/dynamodb-local
+        ports:
+            # Default port is 8000
+            - '8000:8000'
+        # Run the database in memory, see:
+        # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.UsageNotes.html
+        command: ['-jar', 'DynamoDBLocal.jar', '-inMemory']
+
+    localstack:
+        # https://hub.docker.com/r/localstack/localstack
+        image: localstack/localstack
+        ports:
+            - '4566:4566'
+        environment:
+            # See https://docs.localstack.cloud/localstack/configuration/ and
+            # https://hub.docker.com/r/localstack/localstack for config details.
+            # We only want to run S3
+            - SERVICES=s3
+            # We're always working in us-east-1
+            - DEFAULT_REGION=us-east-1
