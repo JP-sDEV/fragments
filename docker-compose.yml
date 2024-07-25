@@ -26,10 +26,21 @@ services:
             # local-aws-setup.sh. We'll default to 'fragments' as the name, unless
             # something else is defined in the env.
             - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME:-fragments}
-            - AWS_DYNAMODB_TABLE_NAME=${AWS_DYNAMODB_TABLE_NAME:-fragments}
+            - AWS_DYNAMODB_TABLE_NAME=fragments
+
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+            - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
         # Ports to publish
         ports:
             - '8080:8080'
+        healthcheck:
+            test: ['CMD', 'curl', '--fail', 'http://localhost:8080']
+            interval: 30s
+            retries: 3
+            start_period: 10s
+            timeout: 10s
     dynamodb-local:
         image: amazon/dynamodb-local
         ports:
