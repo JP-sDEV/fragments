@@ -115,7 +115,7 @@ async function deleteFragment(ownerId, id) {
         // delete metadata
         await metadata.del(ownerId, id);
         // delete fragment data
-        await s3Client.sned(command);
+        await s3Client.send(command);
     } catch (err) {
         logger.error(
             { err, Bucket: params.Bucket, Key: params.Key },
