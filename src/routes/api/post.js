@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
         logger.info({ res }, '/POST response success');
         res.status(201).json(createSuccessResponse({ fragment: newFragment }));
     } catch (err) {
-        logger.warn({ req }, '422: Cannot proccess type');
-        res.status(422).json(createErrorResponse(err));
+        logger.error({ err, req }, '422: Cannot process type');
+        res.status(422).json(createErrorResponse(422, 'Cannot process request'));
     }
 };
