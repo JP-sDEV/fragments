@@ -39,7 +39,7 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 
 ## Stage 2: Serve microservice
 # Install curl
-RUN apk add --no-cache curl=8.3.0-r0
+RUN apk add --no-cache curl=8.9.0-r0
 # Spin up Image
 CMD ["npm", "start"]
 
