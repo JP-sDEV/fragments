@@ -3,6 +3,7 @@
 ## Stage 0: Install base dependencies 
 FROM node:22.2.0-alpine3.20@sha256:04867ddd82db7d0691ee88947d81e32026dc993728311bba9e3ada30d1001ef3 AS dependencies
 
+
 ### Image Metadata
 LABEL maintainer="Jon Pablo <japablo@myseneca.ca>"
 LABEL description="Fragments node.js microservice"
@@ -37,6 +38,8 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 ################################################################################################################
 
 ## Stage 2: Serve microservice
+# Install curl
+RUN apk add --no-cache curl
 # Spin up Image
 CMD ["npm", "start"]
 
