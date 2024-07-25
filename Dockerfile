@@ -41,9 +41,6 @@ COPY ./tests/.htpasswd ./tests/.htpasswd
 # Install curl
 RUN apk add --no-cache curl=8.9.0-r0
 
-# Run as root user
-USER root
-
 # Spin up Image
 CMD ["npm", "start"]
 
