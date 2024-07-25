@@ -8,6 +8,7 @@ const contentType = require('content-type');
 const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 const { getFragments, getFragmentById } = require('./get');
+const { deleteFragment } = require('./delete');
 
 // Middleware
 // Support sending various Content-Types on the body up to 5M in size
@@ -31,11 +32,9 @@ const rawBody = () =>
 // Create a router on which to mount our API endpoints
 const router = express.Router();
 
-// Define our first route, which will be: GET /v1/fragments
 router.get('/fragments', getFragments);
 router.get('/fragments/:id', getFragmentById);
-
-// Define fragments route
 router.post('/fragments', rawBody(), require('./post'));
+router.delete('/fragments/:id', deleteFragment);
 
 module.exports = router;
