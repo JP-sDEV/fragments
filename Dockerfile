@@ -16,6 +16,8 @@ ENV PORT=8080
 ENV NPM_CONFIG_LOGLEVEL=warn
 ENV NPM_CONFIG_COLOR=false
 ENV NODE_ENV=production
+ENV LOG_LEVEL=info
+ENV CUSTOM_LOG_LEVELS=info,warn,error
 
 ### Install environment dependencies
 COPY package.json package-lock.json ./
