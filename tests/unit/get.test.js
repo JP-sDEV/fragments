@@ -368,7 +368,6 @@ describe('GET /v1/fragments', () => {
                 expect(res.statusCode).toBe(200);
                 expect(res.text).toEqual(htmlContent);
                 expect(res.headers['content-type']).toEqual('text/html; charset=utf-8');
-                console.log('Res: ', res.text);
             });
         });
     });
