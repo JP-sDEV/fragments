@@ -2,7 +2,7 @@
     "taskDefinitionArn": "arn:aws:ecs:us-east-1:044398614125:task-definition/fragments-task:5",
     "containerDefinitions": [
         {
-            "name": "fragments-container",
+            "name": "fragments",
             "image": "jp097/fragments:latest",
             "cpu": 256,
             "memoryReservation": 512,
@@ -117,13 +117,8 @@
         }
     ],
     "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE"
-    ],
-    "requiresCompatibilities": [
-        "FARGATE"
-    ],
+    "compatibilities": ["EC2", "FARGATE"],
+    "requiresCompatibilities": ["FARGATE"],
     "cpu": "256",
     "memory": "512",
     "runtimePlatform": {
