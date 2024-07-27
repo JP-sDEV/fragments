@@ -34,48 +34,29 @@ jobs:
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v2
 
-            # NOTE: ending and restarting the Learner Lab will void these secrets,
-            # update them if you are doing this during a new session:
-            # `Error: The security token included in the request is expired`
             - name: Configure AWS Credentials using Secrets
               uses: aws-actions/configure-aws-credentials@v4
               with:
-                  # Use our GitHub Encrypted Secrets via secrets.*
                   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-                  # Hard-code our region, which isn't a secret, and won't change
                   aws-region: us-east-1
 
-            # Login to our ECR repository using the configured credentials
             - name: Login to Amazon ECR
               id: login-ecr
               uses: aws-actions/amazon-ecr-login@v2
 
-            # Build and Push an Image to Amazon ECR
             - name: Build and push to Amazon ECR
               env:
-                  # Define an Environment Variable with our ECR Registry, getting
-                  # the value from the previous step's outputs
                   ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-                  # Define an Environment Variable with our ECR Repository Name
                   ECR_REPO: fragments
-                  # We'll give this image two different tags. First, we'll use the git tag (vX.Y.Z)
-                  # so that we can always go back and re-create this setup again in the future
-                  # if we have to test or debug something. Second, we'll also replace the
-                  # `latest` tag, since this is our most up-to-date version.
                   VERSION_TAG: ${{ github.ref_name }}
               uses: docker/build-push-action@v4
               with:
                   push: true
                   platforms: linux/amd64
-                  # Use the git tag version and `latest`
-                  tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}, ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
+                  tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }},${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
 
-            # We need to update our fragment's Task Definition JSON
-            # (i.e., fragments-definition.json) to use the newly
-            # updated Docker Image to use (i.e., the tag we just pushed to ECR).
-            # We can also update/set the environment variables if we want.
             - name: Fill in the new image ID in the Amazon ECS task definition
               id: update-task-def
               uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -86,10 +67,7 @@ jobs:
               with:
                   task-definition: fragments-definition.json
                   container-name: fragments
-                  # Use the image we just built and pushed to ECR for this tag
                   image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ env.VERSION_TAG }}
-                  # Add all the necessary environment variables, using GitHub Encrypted Secrets
-                  # for any values that should not be checked into git directly.
                   environment-variables: |
                       LOG_LEVEL=debug
                       NODE_ENV=production
