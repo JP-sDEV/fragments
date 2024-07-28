@@ -22,8 +22,11 @@ module.exports = async (req, res) => {
             ownerId: req.user,
             type: type,
         });
+        // Save fragment meta data
+        newFragment = await newFragment.save();
+        logger.info({ newFragmentId: newFragment.id }, 'Fragment ID after save');
 
-        await newFragment.save();
+        // Save fragment content
         await newFragment.setData(fragmentData);
 
         const apiUrl = process.env.API_URL || `${req.protocol}://${req.headers.host}`;
