@@ -19,6 +19,12 @@ module.exports = async (req, res) => {
             return res.status(415).json(createErrorResponse(415, 'Unsupported Content Type'));
         }
 
+        if (!process.env.API_URL) {
+            logger.info('API_URL environment variable is not set.');
+            res.status(500).json(createErrorResponse(500, 'Internal Server Error'));
+            return;
+        }
+
         const { type } = contentType.parse(req.headers['content-type']);
 
         logger.info({ type }, 'Content type header parsed');
