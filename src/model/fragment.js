@@ -66,7 +66,7 @@ class Fragment {
      */
     static async byUser(ownerId, expand = false) {
         let results = await listFragments(ownerId, expand);
-        logger.info(`Fragment ${this.id} accessed`);
+        logger.info(`Fragment byUser: Fragment ${this.id} accessed`);
         return results;
     }
 
@@ -114,8 +114,8 @@ class Fragment {
      * Gets the fragment's data from the database
      * @returns Promise<Buffer>
      */
-    getData() {
-        const data = readFragmentData(this.ownerId, this.id);
+    async getData() {
+        const data = await readFragmentData(this.ownerId, this.id);
         logger.info(`Fragment ${this.id} data accessed`);
         return Promise.resolve(data);
     }
@@ -127,16 +127,21 @@ class Fragment {
      */
     async setData(data) {
         if (!(data instanceof Buffer)) {
-            const message = "Data is not an instanceof 'Buffer'.";
+            const message = "Data is not an instance of 'Buffer'.";
             logger.warn(message);
             throw new Error(message);
         }
 
         this.updated = new Date().toISOString();
         this.size = data.length;
-        const result = writeFragmentData(this.ownerId, this.id, data);
-        logger.info(`Fragment ${this.id} data has been set`);
-        return Promise.resolve(result);
+
+        try {
+            await writeFragmentData(this.ownerId, this.id, data);
+            logger.info(`Fragment ${this.id} data has been set`);
+        } catch (error) {
+            logger.error({ error, fragmentId: this.id }, 'Failed to set fragment data');
+            throw new Error('Failed to set fragment data');
+        }
     }
 
     /**
