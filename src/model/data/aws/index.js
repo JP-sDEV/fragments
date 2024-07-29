@@ -1,4 +1,4 @@
-// src/model/data/memory/index.js
+// src/model/data/aws/index.js
 
 // temp until DyanoDB
 const MemoryDB = require('../memory/memory-db');
@@ -11,13 +11,13 @@ const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aw
 const metadata = new MemoryDB();
 
 // Write a fragment's metadata to memory db. Returns a Promise
-function writeFragment(fragment) {
-    return metadata.put(fragment.ownerId, fragment.id, fragment);
+async function writeFragment(fragment) {
+    return await metadata.put(fragment.ownerId, fragment.id, fragment);
 }
 
 // Read a fragment's metadata from memory db. Returns a Promise
-function readFragment(ownerId, id) {
-    return metadata.get(ownerId, id);
+async function readFragment(ownerId, id) {
+    return await metadata.get(ownerId, id);
 }
 
 // Writes a fragment's data to an S3 Object in a Bucket
