@@ -83,7 +83,7 @@ class Fragment {
             logger.warn(message);
             throw new Error(message);
         }
-        logger.info(`Fragment ${this.id} accessed`);
+        logger.info(`Fragment byId: Fragment ${this.id} accessed`);
         return result;
     }
 
