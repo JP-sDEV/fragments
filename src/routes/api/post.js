@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
             return res.status(415).json(createErrorResponse(415, 'Unsupported Content Type'));
         }
 
-        console.log('API_URL: ', process.env.API_URL);
+        logger.info({ API_URL: process.env.API_URL }, 'API_URL .env');
 
         // Create fragment if type is supported
         const fragmentData = req.body;
@@ -38,13 +38,13 @@ module.exports = async (req, res) => {
         await newFragment.setData(fragmentData);
 
         const location = new URL(`/v1/fragments/${newFragment.id}`, process.env.API_URL);
-        logger.info({ location: location }, 'Fragment Location: ');
-        res.setHeader('Location', location.toString());
 
         // const apiUrl = process.env.API_URL || `${req.protocol}://${req.headers.host}`; // ISSUE: process.env.API_URL is undefined
         // const location = new URL(`/v1/fragments/${newFragment.id}`, apiUrl);
-        // res.setHeader('Location', location.toString());
 
+        res.setHeader('Location', location.toString());
+
+        logger.info({ location: location }, 'Fragment Location: ');
         logger.info({ res }, '/POST response success');
         res.status(201).json(createSuccessResponse({ fragment: newFragment }));
     } catch (err) {
