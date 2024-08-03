@@ -123,7 +123,7 @@ class Fragment {
             'src/model/fragment.js: Attempting to delete fragment'
         );
         logger.info(`Fragment ${id} deleted`);
-        return deleteFragment(ownerId, id);
+        return await deleteFragment(ownerId, id);
     }
 
     /**
