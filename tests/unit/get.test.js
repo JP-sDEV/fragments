@@ -370,5 +370,29 @@ describe('GET /v1/fragments', () => {
                 expect(res.headers['content-type']).toEqual('text/html; charset=utf-8');
             });
         });
+
+        describe('Metadata', () => {
+            test('get fragment metadata', async () => {
+                // insert fragment
+                const post = await request(app)
+                    .post('/v1/fragments')
+                    .auth('user1@email.com', 'password1')
+                    .set('Content-Type', 'application/json')
+                    .send(jsonFragment);
+
+                expect(post.statusCode).toBe(201);
+
+                const postJSON = JSON.parse(post.text);
+                // console.log('PostJson: ', postJSON);
+                const fragmentId = postJSON.fragment.id;
+
+                const res = await request(app)
+                    .get(`/v1/fragments/${fragmentId}/info`)
+                    .auth('user1@email.com', 'password1');
+
+                expect(res.statusCode).toBe(200);
+                // expect(res.headers['content-type']).toEqual('application/json; charset=utf-8');
+            });
+        });
     });
 });
