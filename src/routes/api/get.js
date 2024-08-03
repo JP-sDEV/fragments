@@ -13,20 +13,19 @@ const supportedTypes = {
     '.html': 'text/html',
 };
 
+// Fragment
 async function getFragments(req, res) {
-    logger.info({ req }, '/GET');
+    logger.info('/GET: getFragments');
     try {
-        let fragments;
-        fragments = await Fragment.byUser(req.user, req.query.expand === '1');
+        let fragments = await Fragment.byUser(req.user, req.query.expand === '1');
         res.status(200).json(createSuccessResponse({ fragments: fragments }));
     } catch (error) {
         res.status(401).json(createErrorResponse(error.code || 500, error.code));
     }
 }
 
-// by id
-async function getFragmentById(req, res) {
-    logger.info({ req }, '/GET');
+async function getFragmentDataById(req, res) {
+    logger.info({ ownerId: req.user, id: req.params.id }, '/GET: getFragmentDataById');
     try {
         // path.parse refer to: https://nodejs.org/api/path.html
         const { name, ext } = path.parse(req.params.id);
@@ -38,7 +37,7 @@ async function getFragmentById(req, res) {
             return res.status(404).json(createErrorResponse(404, error.message));
         }
 
-        const bufferRawData = await fragment.getData();
+        const bufferRawData = await Fragment.dataById(req.user, name);
         // Check if extension is supported
         if (!supportedTypes[ext] && ext) {
             return res
@@ -56,12 +55,35 @@ async function getFragmentById(req, res) {
         });
 
         return res.status(200).send(data);
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json(createErrorResponse(500, error.message));
+    } catch (err) {
+        console.error('Error:', err);
+        return res.status(500).json(createErrorResponse(500, err.message));
     }
 }
 
+// Metadata
+async function getFragment(req, res) {
+    logger.info({ ownerId: req.user, id: req.params.id }, '/GET: getFragment');
+
+    try {
+        // path.parse refer to: https://nodejs.org/api/path.html
+        const { name } = path.parse(req.params.id);
+
+        let fragment;
+        try {
+            fragment = await Fragment.byId(req.user, name);
+        } catch (err) {
+            return res.status(err.status).json(createErrorResponse(err.status, err.message));
+        }
+        return res.status(200).send(createSuccessResponse({ fragment: fragment }));
+    } catch (err) {
+        console.error('Error:', err);
+        const errorCode = err.status || 500;
+        return res.status(errorCode).json(createErrorResponse(errorCode, err.message));
+    }
+}
+
+// Helper
 async function convert(type, buffer) {
     switch (type) {
         case '.txt':
@@ -85,4 +107,5 @@ async function convert(type, buffer) {
 }
 
 module.exports.getFragments = getFragments;
-module.exports.getFragmentById = getFragmentById;
+module.exports.getFragmentDataById = getFragmentDataById;
+module.exports.getFragment = getFragment;

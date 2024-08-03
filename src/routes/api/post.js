@@ -7,7 +7,7 @@ const logger = require('../../logger');
 require('dotenv').config();
 
 module.exports = async (req, res) => {
-    logger.info({ req }, '/POST');
+    logger.info('/POST');
 
     try {
         // Check if request body is a Buffer
@@ -37,12 +37,15 @@ module.exports = async (req, res) => {
 
         logger.info({ newFragment: newFragment }, 'Fragment Data created');
 
-        // Save fragment meta data
-        await newFragment.save();
-        logger.info({ newFragmentId: newFragment.id }, 'Fragment ID after save');
-
         // Save fragment content
         await newFragment.setData(req.body);
+        logger.info('Fragment Buffer Data saved');
+
+        logger.info({ newFragmentId: newFragment.id }, 'Fragment ID after save');
+
+        // Save fragment meta data
+        await newFragment.save();
+        logger.info('Fragment Metadata saved');
 
         // Generate URL for the new fragment
         const location = new URL(`/v1/fragments/${newFragment.id}`, process.env.API_URL);
@@ -50,11 +53,12 @@ module.exports = async (req, res) => {
         // Set Location header in response
         res.setHeader('Location', location.toString());
 
-        logger.info({ location: location.toString() }, 'Fragment Location set');
+        // logger.info({ location: location.toString() }, 'Fragment Location set');
         logger.info({ resStatus: 201, newFragmentId: newFragment.id }, '/POST response success');
         res.status(201).json(createSuccessResponse({ fragment: newFragment }));
     } catch (err) {
-        logger.error({ err, req, stack: err.stack }, '422: Cannot process request');
+        const errorCode = err.status || 500;
+        logger.error({ status: errorCode }, `: ${err.message}`);
         res.status(422).json(createErrorResponse(422, 'Cannot process request'));
     }
 };
