@@ -59,6 +59,6 @@ module.exports = async (req, res) => {
     } catch (err) {
         const errorCode = err.status || 500;
         logger.error({ status: errorCode }, `: ${err.message}`);
-        res.status(422).json(createErrorResponse(422, 'Cannot process request'));
+        res.status(errorCode).json(createErrorResponse(errorCode, err.message));
     }
 };
