@@ -71,19 +71,40 @@ class Fragment {
     }
 
     /**
-     * Gets a fragment for the user by the given id.
+     * Gets a fragment metadata for the user by the given id.
      * @param {string} ownerId user's hashed email
      * @param {string} id fragment's id
-     * @returns Promise<Fragment>
+     * @returns Promise<Fragment> // metadata
      */
     static async byId(ownerId, id) {
+        logger.info(
+            { ownerId: ownerId, id: id },
+            'model/fragment.js: Attempting to get fragment metadata by id'
+        );
         const result = await readFragment(ownerId, id);
         if (!result) {
-            const message = `Fragment(${id} by ${ownerId} cannot be found.`;
+            const message = `Fragment metadata(${id} by ${ownerId} cannot be found.`;
             logger.warn(message);
-            throw new Error(message);
+            throw new NotFoundError(message);
         }
-        logger.info(`Fragment byId: Fragment ${this.id} accessed`);
+        logger.info(`Fragment byId: Fragment metadata ${id} accessed`);
+        return result;
+    }
+
+    /**
+     * Get all fragments (id or full) for the given user
+     * @param {string} ownerId user's hashed email
+     * @param {boolean} expand whether to expand ids to full fragments
+     * @returns Promise<Array<Fragment>>
+     */
+    static async dataById(ownerId, id) {
+        const result = await readFragmentData(ownerId, id);
+        if (!result) {
+            const message = `Fragment Data (${id} by ${ownerId} cannot be found.`;
+            logger.warn(message);
+            throw new NotFoundError(message);
+        }
+        logger.info(`Fragment data byId: Fragment ${id} accessed`);
         return result;
     }
 
@@ -93,8 +114,15 @@ class Fragment {
      * @param {string} id fragment's id
      * @returns Promise<void>
      */
-    static delete(ownerId, id) {
-        logger.info(`Fragment ${this.id} deleted`);
+    static async delete(ownerId, id) {
+        logger.info(
+            {
+                ownerId: ownerId,
+                id: id,
+            },
+            'src/model/fragment.js: Attempting to delete fragment'
+        );
+        logger.info(`Fragment ${id} deleted`);
         return deleteFragment(ownerId, id);
     }
 
@@ -180,6 +208,14 @@ class Fragment {
         let textRegex = /^text\/.*/i; // support for text/* types
         let jsonRegex = /^application\/json$/i; // support for ONLY application/json
         return textRegex.test(value) || jsonRegex.test(value);
+    }
+}
+
+class NotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'NotFoundError';
+        this.status = 404;
     }
 }
 
