@@ -2,31 +2,41 @@
 
 const { createSuccessResponse, createErrorResponse } = require('../../response');
 const { Fragment } = require('../../model/fragment');
-const path = require('path');
 const logger = require('../../logger');
 
 async function deleteFragment(req, res) {
-    logger.info({ req }, '/DELETE');
+    logger.info('api/delete.js /DELETE request received');
     try {
-        // path.parse refer to: https://nodejs.org/api/path.html
-        const { name } = path.parse(req.params.id);
+        const id = req.params.id;
+        logger.info({ 'req.params': req.params }, '/DELETE: Parameters received');
+
         let fragment;
         try {
-            fragment = await Fragment.byId(req.user, name);
-            await Fragment.delete(req.user, name);
-        } catch (error) {
-            return res.status(404).json(createErrorResponse(404, error.message));
+            logger.info('/DELETE: Attempting to retrieve fragment');
+            fragment = await Fragment.byId(req.user, id);
+            logger.info({ fragment: fragment }, '/DELETE: Fragment to delete');
+
+            await Fragment.delete(fragment.ownerId, fragment.id);
+
+            logger.info(`/DELETE: Fragment with ID ${id} deleted successfully`);
+        } catch (err) {
+            const errorCode = err.status || 500;
+            logger.error(
+                `api/delete.js /DELETE failed to delete fragment (${errorCode}): ${err.message}`
+            );
+            return res.status(errorCode).json(createErrorResponse(errorCode, err.message));
         }
 
-        // Set Content-Type header
-        res.set({
-            'Content-Length': fragment.size,
-        });
+        // Set Content-Length header
+        if (fragment && fragment.size) {
+            res.set('Content-Length', fragment.size);
+        }
 
         return res.status(200).send(createSuccessResponse());
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json(createErrorResponse(500, error.message));
+    } catch (err) {
+        const errorCode = err.status || 500;
+        logger.error(`api/delete.js /DELETE failed (${errorCode}): ${err.message}`);
+        return res.status(errorCode).json(createErrorResponse(errorCode, err.message));
     }
 }
 
