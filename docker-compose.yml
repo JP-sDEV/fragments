@@ -16,9 +16,9 @@ services:
             - LOG_LEVEL=${LOG_LEVEL:-debug}
             # AWS CREDS
             - AWS_REGION=us-east-1
-            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-            - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-test}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-test}
+            - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN:-test}
             # S3
             # Use the LocalStack endpoint vs. AWS for S3 AWS SDK clients.
             # NOTE: we use Docker's internal network to the localstack container
