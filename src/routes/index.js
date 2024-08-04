@@ -30,7 +30,7 @@ router.get('/', (req, res) => {
         author,
         githubUrl: 'https://github.com/JP-sDEV/fragments',
         version,
-        hostname: hostname,
+        hostname: hostname(),
     };
 
     res.setHeader('Cache-Control', 'no-cache');
