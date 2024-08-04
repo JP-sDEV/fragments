@@ -1,3 +1,4 @@
 // src/model/data/index.js
 
-module.exports = process.env.AWS_ACCESS_KEY_ID === 'test' ? require('./memory') : require('./aws');
+module.exports =
+    process.env.API_URL === 'http://localhost:8080' ? require('./memory') : require('./aws');
