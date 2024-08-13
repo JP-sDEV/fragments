@@ -4,9 +4,6 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
-const markdownit = require('markdown-it');
-const md = markdownit();
-
 describe('GET /v1/fragments', () => {
     describe('Request requires authentication', () => {
         test('unauthenticated requests are denied', () =>
