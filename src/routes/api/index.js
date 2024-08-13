@@ -9,6 +9,7 @@ const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 const { getFragments, getFragmentDataById, getFragment } = require('./get');
 const { deleteFragment } = require('./delete');
+const putFragment = require('./put');
 
 // Middleware
 // Support sending various Content-Types on the body up to 5M in size
@@ -42,5 +43,8 @@ router.post('/fragments', rawBody(), require('./post'));
 
 // DELETE
 router.delete('/fragments/:id', deleteFragment);
+
+// // PUT
+router.put('/fragments/:id', rawBody(), putFragment);
 
 module.exports = router;

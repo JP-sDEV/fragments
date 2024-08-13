@@ -4,13 +4,23 @@ const { createSuccessResponse, createErrorResponse } = require('../../response')
 const { Fragment } = require('../../model/fragment');
 const path = require('path');
 const logger = require('../../logger');
-const markdownit = require('markdown-it');
-const md = markdownit();
+// const markdownit = require('markdown-it');
+// const md = markdownit();
+const { convertContentTypeToTargetFormat } = require('../../helper/conversion');
 
 const supportedTypes = {
     '.txt': 'text/plain',
-    '.json': 'application/json',
+    '.md': 'text/markdown',
     '.html': 'text/html',
+    '.csv': 'text/csv',
+    '.json': 'application/json',
+    '.yaml': 'application/yaml',
+    '.yml': 'application/yaml',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.webp': 'image/webp',
+    '.gif': 'image/gif',
+    '.avif': 'image/avif',
 };
 
 // Fragment
@@ -27,8 +37,9 @@ async function getFragments(req, res) {
 async function getFragmentDataById(req, res) {
     logger.info({ ownerId: req.user, id: req.params.id }, '/GET: getFragmentDataById');
     try {
-        // path.parse refer to: https://nodejs.org/api/path.html
         const { name, ext } = path.parse(req.params.id);
+
+        logger.info({ ext: ext }, '/GET: getFragmentDataById testing');
 
         let fragment;
         try {
@@ -38,20 +49,38 @@ async function getFragmentDataById(req, res) {
         }
 
         const bufferRawData = await Fragment.dataById(req.user, name);
-        // Check if extension is supported
-        if (!supportedTypes[ext] && ext) {
+
+        // Check if extension is supported for the fragment's format
+        if (!fragment.formats.includes(ext) && ext) {
             return res
                 .status(415)
                 .json(createErrorResponse(415, `Fragment cannot be returned as ${ext}`));
         }
 
         // Convert data if necessary
-        const data = supportedTypes[ext] ? await convert(ext, bufferRawData) : bufferRawData;
+        let data = bufferRawData;
+        if (ext) {
+            try {
+                logger.info(
+                    { original: fragment.mimeType, towards: ext },
+                    '/GET: getFragmentDataById attempt conversion'
+                );
+                data = await convertContentTypeToTargetFormat(
+                    fragment.mimeType,
+                    ext,
+                    bufferRawData
+                );
+            } catch (error) {
+                return res
+                    .status(500)
+                    .json(createErrorResponse(500, `Conversion error: ${error.message}`));
+            }
+        }
 
-        // Set Content-Type header
+        // Set Content-Type and Content-Length headers
         res.set({
-            'Content-Type': supportedTypes[ext] || fragment.type, // no extension given, use fragment type
-            'Content-Length': fragment.size,
+            'Content-Type': supportedTypes[ext] || fragment.type,
+            'Content-Length': Buffer.byteLength(data), // Ensure correct length after conversion
         });
 
         return res.status(200).send(data);
@@ -83,28 +112,28 @@ async function getFragment(req, res) {
     }
 }
 
-// Helper
-async function convert(type, buffer) {
-    switch (type) {
-        case '.txt':
-            return buffer.toString('utf-8');
+// // Helper
+// async function convert(type, buffer) {
+//     switch (type) {
+//         case '.txt':
+//             return buffer.toString('utf-8');
 
-        case '.html':
-            try {
-                // Convert markdown fragment binary into string
-                const markdownString = new TextDecoder().decode(buffer);
-                // Convert string into .html
-                const htmlContent = md.render(markdownString);
+//         case '.html':
+//             try {
+//                 // Convert markdown fragment binary into string
+//                 const markdownString = new TextDecoder().decode(buffer);
+//                 // Convert string into .html
+//                 const htmlContent = md.render(markdownString);
 
-                return htmlContent;
-            } catch (error) {
-                console.error('Failed to parse into HTMl:', error);
-                throw error;
-            }
-        default:
-            return null;
-    }
-}
+//                 return htmlContent;
+//             } catch (error) {
+//                 console.error('Failed to parse into HTMl:', error);
+//                 throw error;
+//             }
+//         default:
+//             return null;
+//     }
+// }
 
 module.exports.getFragments = getFragments;
 module.exports.getFragmentDataById = getFragmentDataById;

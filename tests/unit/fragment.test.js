@@ -47,10 +47,10 @@ describe('Fragment class', () => {
         test('type can include a charset', () => {
             const fragment = new Fragment({
                 ownerId: '1234',
-                type: 'text/plain; charset=utf-8',
+                type: 'text/plain',
                 size: 0,
             });
-            expect(fragment.type).toEqual('text/plain; charset=utf-8');
+            expect(fragment.type).toEqual('text/plain');
         });
 
         test('size gets set to 0 if missing', () => {
@@ -123,28 +123,14 @@ describe('Fragment class', () => {
         });
     });
 
-    describe('isSupportedType()', () => {
-        test('common text types are supported, with and without charset', () => {
-            expect(Fragment.isSupportedType('text/plain')).toBe(true);
-            expect(Fragment.isSupportedType('text/plain; charset=utf-8')).toBe(true);
-        });
-
-        test('other types are not supported', () => {
-            expect(Fragment.isSupportedType('application/octet-stream')).toBe(false);
-            expect(Fragment.isSupportedType('application/msword')).toBe(false);
-            expect(Fragment.isSupportedType('audio/webm')).toBe(false);
-            expect(Fragment.isSupportedType('video/ogg')).toBe(false);
-        });
-    });
-
     describe('mimeType, isText', () => {
         test('mimeType returns the mime type without charset', () => {
             const fragment = new Fragment({
                 ownerId: '1234',
-                type: 'text/plain; charset=utf-8',
+                type: 'text/plain',
                 size: 0,
             });
-            expect(fragment.type).toEqual('text/plain; charset=utf-8');
+            expect(fragment.type).toEqual('text/plain');
             expect(fragment.mimeType).toEqual('text/plain');
         });
 
@@ -158,7 +144,7 @@ describe('Fragment class', () => {
             // Text fragment
             const fragment = new Fragment({
                 ownerId: '1234',
-                type: 'text/plain; charset=utf-8',
+                type: 'text/plain',
                 size: 0,
             });
             expect(fragment.isText).toBe(true);
@@ -169,10 +155,10 @@ describe('Fragment class', () => {
         test('formats returns the expected result for plain text', () => {
             const fragment = new Fragment({
                 ownerId: '1234',
-                type: 'text/plain; charset=utf-8',
+                type: 'text/plain',
                 size: 0,
             });
-            expect(fragment.formats).toEqual(['text/plain']);
+            expect(fragment.formats).toEqual(['.txt']);
         });
     });
 

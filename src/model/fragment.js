@@ -196,7 +196,22 @@ class Fragment {
      * @returns {Array<string>} list of supported mime types
      */
     get formats() {
-        return ['text/plain'];
+        const conversions = {
+            'text/plain': ['.txt'],
+            'text/markdown': ['.md', '.html', '.txt'],
+            'text/html': ['.html', '.txt'],
+            'text/csv': ['.csv', '.txt', '.json'],
+            'application/json': ['.json', '.yaml', '.yml', '.txt'],
+            'application/yaml': ['.yaml', '.txt'],
+            'image/png': ['.png', '.jpg', '.webp', '.gif', '.avif'],
+            'image/jpeg': ['.png', '.jpg', '.webp', '.gif', '.avif'],
+            'image/webp': ['.png', '.jpg', '.webp', '.gif', '.avif'],
+            'image/avif': ['.png', '.jpg', '.webp', '.gif', '.avif'],
+            'image/gif': ['.png', '.jpg', '.webp', '.gif', '.avif'],
+        };
+
+        // return ['text/plain'];
+        return conversions[this.type];
     }
 
     /**
@@ -205,9 +220,24 @@ class Fragment {
      * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
      */
     static isSupportedType(value) {
-        let textRegex = /^text\/.*/i; // support for text/* types
-        let jsonRegex = /^application\/json$/i; // support for ONLY application/json
-        return textRegex.test(value) || jsonRegex.test(value);
+        // let textRegex = /^text\/.*/i; // support for text/* types
+        // let jsonRegex = /^application\/json$/i; // support for ONLY application/json
+        // return textRegex.test(value) || jsonRegex.test(value);
+        const supported = [
+            'text/plain',
+            'text/markdown',
+            'text/html',
+            'text/csv',
+            'application/json',
+            'application/yaml',
+            'image/png',
+            'image/jpeg',
+            'image/webp',
+            'image/avif',
+            'image/gif',
+        ];
+
+        return supported.includes(value);
     }
 }
 
